@@ -1,0 +1,41 @@
+Query 1
+select a.codice
+from accordo a, nazione n1, nazione n2
+where a.nazione1 = n1.nome and a.nazione2 = n2.nome and n1.categoria = n2.categoria
+
+Query 2
+select n1.areageo, count(a.codice)
+from accordo a, nazione n1, nazione n2
+where a.nazione1 = n1.nome and a.nazione2 = n2.nome and n1.areageo = n2.areageo 
+group by n1.areageo
+
+Query 3
+select n.nome
+from nazione n
+where n.nome not in (select n1.nome
+                     from accordo a, nazione n1, nazione n2, areageo g1, areageo g2
+                     where a.nazione1 = n1.nome and a.nazione2 = n2.nome and 
+                           n1.areageo = g1.id and n2.areageo = g2.id and 
+                           g1.continente <> g2.continente)
+
+Query 4
+select n1.nome, n2.nome
+from nazione n1, nazione n2
+where (n1.nome,n2.nome) not in (select a.nazione1, a.nazione2
+                                from accordo a
+                                where a.ricavo > 2000)
+
+Query 5
+select g.continente, 0
+from areageo g
+where g.continente not in (select g.continente  
+                           from accordo a, nazione n, areageo g 
+                           where a.nazione2 = n.nome and n.areageo = g.id 
+                                 and a.ricavo >= 1000)
+union
+select g.continente, count(a.nazione2)
+from accordo a, nazione n, areageo g 
+where a.nazione2 = n.nome and n.areageo = g.id and a.ricavo >= 1000
+group by g.continente
+
+

@@ -1,0 +1,34 @@
+1)
+select traduttore.codice, brano
+from traduttore, traduzione
+where traduttore.codice = codTraduttore and annonascita > 1980 and madrelingua = linguadestinazione
+
+2)
+select madrelingua,nome,cognome
+from traduttore
+where madrelingua in (select madrelingua
+					  from traduttore
+					  group by madrelingua
+					  having count(*) = 2)
+
+3)
+select traduttore.codice, count(*) as numTraduzioni
+from traduttore, traduzione
+where traduttore.codice = codTraduttore and linguaorigine = 'inglese' and linguadestinazione = madrelingua
+group by traduttore.codice
+
+4)
+select traduttore.nome, traduttore.cognome
+from traduttore,traduzione
+where traduttore.codice = codTraduttore
+group by traduttore.codice
+having count(*) = (select max(countBrano) from (select count(brano) as countBrano from traduzione group by brano) as occorrenzaBrano)
+
+/* nell'having, count(*) si riferisce al numero di tuple "che possiede" ogni raggruppamento
+5)
+select brano, traduttore.codice
+from traduttore,traduzione t
+where traduttore.codice = codTraduttore and traduttore.annonascita in (select max(annonascita) as anno from traduttore, traduzione where traduttore.codice = codTraduttore group by brano having brano = t.brano)
+
+/*la t in t.brano permette di tenere un riferimento al brano contenuto nella tupla della query principale, in modo tale da distinguerlo e confrontarlo con quello della sotto query
+

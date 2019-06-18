@@ -1,0 +1,36 @@
+1)  select p.nome, regione
+    from persona p, citta
+    where eta > 17 and p.cittaNascita = citta.nome
+    
+2)  select p.nome, f.nome
+    from persona p,persona f, genia g
+    where p.nome = g.genitore and f.nome = g.figlio and p.cittaNascita = f.cittaNascita
+
+3)  select distinct regione
+    from persona p, genia, citta
+    where p.nome = genia.genitore and p.cittaNascita = citta.nome and p.eta >50
+
+4)  select distinct p.nome
+    from persona p, genia f left join genia n on f.genitore = n.figlio
+    where p.nome = n.genitore and p.sesso = 'M'
+    
+5)  select f.figlio,figlio.eta,n.genitore as nonno
+    from persona figlio,genia f left join genia n on f.genitore = n.figlio
+    where figlio.nome = f.figlio and n.genitore not in (select distinct p.nome
+                                                        from persona p, genia f left join genia n on f.genitore = n.figlio
+                                                        where p.nome = n.genitore and p.sesso = 'F')
+                                                        
+                                                        
+                                                        
+    select distinct p1.nome,g2.genitore
+    from persona p1 left join genia g1 on p1.nome = g1.figlio left join genia g2 on g2.figlio = g1.genitore left join persona p2 on (p2.nome = g2.genitore or p2.nome = null) 
+    where p2.sesso !='F' or p2.sesso is null
+
+                                                        
+6)  select distinct regione
+    from persona p, genia f left join genia n on f.genitore = n.figlio, citta
+    where p.nome = n.genitore and p.sesso = 'M' and p.eta < 60 and p.cittaNascita = citta.nome
+    
+7)  
+
+8)

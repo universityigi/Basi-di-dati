@@ -1,0 +1,125 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Giocattolo(codice,nome,classe) \
+Bambino(codice,nome,citt\'e0) \
+Richiesta(codiceb,codiceg,preferenza)\
+\
+\
+1 A\
+/* Calcolare il codice ed il nome dei giocattoli che sono stati richiesti almeno una volta con preferenza 5 */\
+\
+select distinct r1.codiceg, g1.nome\
+from richiesta r1, giocattolo g1\
+where g1.codice = r1.codiceg and r1.codiceg in (select r2.codiceg from richiesta r2 where r2.preferenza=5)\
+\
+\
+2 A\
+/* Calcolare la lista senza ripetizioni dei nomi dei bambini residenti a Milano che hanno richiesto\
+almeno un giocattolo di classe diversa da 8 con preferenza minore di 3. */\
+\
+select distinct  b2.nome\
+from bambino b2, giocattolo g2, richiesta r2\
+where b2.citt\'e0='Milano' and g2.codice=r2.codiceg and r2.preferenza<3 and g2.classe!='8' and b2.codice=r2.codiceb\
+group by b2.nome\
+\
+\
+3 A\
+/*Calcolare, per ogni citt\'e0, il numero di richieste fatte da bambini residenti in quella citt\'e0 per\
+giocattoli di classe maggiore di 3, mostrando la citt\'e0 ed il numero calcolato.\
+*/\
+\
+select b1.citt\'e0, count(r1)\
+from bambino b1, richiesta r1, giocattolo g1\
+where b1.codice=r1.codiceb and g1.codice=r1.codiceg and g1.classe>3\
+group by b1.citt\'e0 \
+\
+\
+4 A\
+/*Calcolare, per ogni giocattolo che non `e stato richiesto da alcun bambino residente a Firenze,\
+la media delle preferenze con cui `e stato richiesto, mostrando il codice del giocattolo e la media\
+calcolata.\
+*/\
+\
+select g1.codice, avg(r1.preferenza)\
+from bambino b1, richiesta r1,giocattolo g1	\
+where b1.codice=r1.codiceb and g1.codice=r1.codiceg and g1.codice not in (select distinct g2.codice from bambino b2, richiesta r2, giocattolo g2 where b2.codice=r2.codiceb and g2.codice=r2.codiceg and b2.citt\'e0='Firenze')\
+GROUP BY g1.codice\
+\
+\
+5  A Sbagliato\
+/*Calcolare, per ogni citt\'e0, la preferenza massima espressa da bambini residenti in quella citt\'e0 per\
+giocattoli di classe maggiore o uguale a 6, ma solo se le richieste espresse da bambini residenti in\
+quella citt\'e0 per giocattoli di classe maggiore o uguale a 6 sono pi`u di 1. Si mostri la citt`a e la\
+preferenza massima calcolata.\
+*/\
+\
+\
+select b1.citt\'e0, max(r1.preferenza)\
+from bambino b1, richiesta r1, giocattolo g1\
+where b1.codice=r1.codiceb and g1.codice=r1.codiceg and b1.codice=r1.codiceb and g1.classe >=6 and 1<=(\
+	select count(r2)\
+	from bambino b2, richiesta r2, giocattolo g2 \
+	where b2.codice=r2.codiceb and g2.codice=r2.codiceg and b2.codice=r2.codiceb and g2.classe >=6)\
+group by b1.citt\'e0\
+\
+\
+1 B\
+\
+\
+\
+\
+2 B \
+/* Calcolare la lista senza ripetizioni dei nomi dei giocattoli di classe maggiore di 2 che sono stati\
+richiesti con preferenza maggiore di 1 da almeno un bambino residente a Milano. */\
+\
+select distinct g.nome\
+from giocattolo g, bambino b, richiesta r\
+where g.classe>2 and g.codice = r.codiceg and b.codice = r.codiceb and r.preferenza>1 and b.citt\'e0 = 'Milano'\
+\
+3 B\
+/* Calcolare, per ogni classe, il numero di richieste fatte per giocattoli di quella classe da bambini\
+residenti a Palermo, mostrando la classe ed il numero calcolato. */\
+\
+select distinct g.classe, count(r)\
+from giocattolo g, bambino b, richiesta r\
+where g.codice = r.codiceg and b.codice = r.codiceb and b.citt\'e0 = 'Palermo'\
+group by g.classe\
+\
+4 B\
+/*  Calcolare, per ogni bambino che non ha fatto alcuna richiesta di giocattoli di classe 10, la media\
+delle preferenze delle sue richieste, mostrando il codice del bambino e la media calcolata. */\
+\
+(select b1.codice, avg(r1.preferenza)\
+from giocattolo g1, bambino b1, richiesta r1\
+where g1.codice = r1.codiceg and b1.codice = r1.codiceb and r1 not in\
+		(select r2\
+		from giocattolo g2, bambino b2, richiesta r2\
+		where g2.codice = r2.codiceg and b2.codice = r2.codiceb and g2.classe=10)\
+group by b1.codice)\
+\
+5 B Sbagliato\
+\
+/* \
+Calcolare, per ogni citta, la preferenza minima espressa da bambini residenti in quella citt`a per\
+giocattoli di classe minore o uguale a 10, ma solo se le richieste espresse da bambini residenti in\
+quella citt`a per giocattoli di classe minore o uguale a 10 sono pi`u di 1. Si mostri la citt`a e la\
+preferenza minima calcolata.\
+*/\
+\
+select b1.citt\'e0, min(r1.preferenza)\
+from giocattolo g1, bambino b1, richiesta r1 \
+where g1.codice = r1.codiceg and b1.codice = r1.codiceb and r1 in (select r2 from giocattolo g2, bambino b2, richiesta r2, giocattolo g3, bambino b3, richiesta r3 where g2.codice = r2.codiceg and b2.codice = r2.codiceb and g2.classe<=10 and g3.codice = r3.codiceg and b3.codice = r3.codiceb and g3.classe<=10 and b2.nome!= b3.nome and b2.citt\'e0 = b3.citt\'e0 group by r2 having r2.count>1)\
+order by b1.citt\'e0\
+\
+		\
+\
+\
+\
+\
+\
+}

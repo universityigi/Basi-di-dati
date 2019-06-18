@@ -1,0 +1,38 @@
+1)
+select tore.nome, tore.cognome, tone.brano
+from traduttore tore join traduzione tone on tore.codice = tone.codtraduttore
+where tore.annonascita < 1990 and tore.madrelingua = tone.linguaorigine
+
+2)
+select t1.nome,t1.cognome,t1.madrelingua,t2.nome,t2.cognome,t2.madrelingua
+from traduttore t1, traduttore t2
+where t1.madrelingua != t2.madrelingua and t1.annonascita = t2.annonascita
+
+3)
+select tore.codice, count(*) as numTraduzioni
+from traduttore tore join traduzione tone on tore.codice = tone.codtraduttore
+where tore.madrelingua = tone.linguaorigine and tone.linguadestinazione = 'francese'
+group by tore.codice
+
+4)
+select brano
+from traduzione tone
+group by brano
+having (select count(*) from (select tone1.brano,tone1.codtraduttore
+	    					  from traduzione tone1
+	  					      where tone.brano = tone1.brano
+	    					  group by tone1.brano,tone1.codtraduttore) as auxTable)
+	   = 
+	   (select count(*) from (select tore.codice
+				   						 from traduttore tore join traduzione tone on tore.codice = tone.codtraduttore
+				   						 group by tore.codice) as auxTable )
+
+5)
+select tone.brano,tore.codice
+from traduttore tore join traduzione tone on tore.codice = tone.codtraduttore
+where tore.annonascita in (select min(annonascita)
+						   from traduttore tore1 join traduzione tone1 on tore1.codice = tone1.codtraduttore
+						   where tone.brano = tone1.brano)
+
+
+

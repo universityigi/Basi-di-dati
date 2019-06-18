@@ -1,0 +1,17 @@
+1)
+
+select giocattolo.codice, giocattolo.nome
+from giocattolo
+where classe > 5
+
+2)
+
+select distinct bambino.nome 
+from bambino join richiesta on bambino.codice = richiesta.codiceb
+join giocattolo on giocattolo.codice = richiesta.codiceg
+where bambino.citt = 'Milano' and classe != 8 and preferenza < 3
+
+3)
+
+
+ 

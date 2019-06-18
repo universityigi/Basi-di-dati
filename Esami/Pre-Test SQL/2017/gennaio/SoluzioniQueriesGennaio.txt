@@ -1,0 +1,40 @@
+Queste sono solo alcune delle soluzioni possibili
+
+
+
+-- Query 1.
+select Scuola.codice, Esito.promossi
+from Scuola join Esito on Scuola.codice=Esito.codscuola
+where Esito.anno = 2015 and Scuola.provincia = 15
+
+
+-- Query 2.
+select Scuola.codice
+from Scuola join Esito on Scuola.codice=Esito.codscuola join Provincia on 
+     Scuola.provincia = Provincia.codprovincia
+where bocciati < 1/2 * promossi and Esito.anno > 2010 and Provincia.regione='Lazio'
+
+
+-- Query 3.
+select Scuola.provincia, Esito.anno, sum(Esito.promossi)
+from Scuola join Esito on Scuola.codice=Esito.codscuola
+where Scuola.tipo = 'classico' or Scuola.tipo = ‘scientifico' 
+group by Scuola.provincia, Esito.anno
+
+
+-- Query 4.
+select Scuola.codice
+from Scuola
+where codice not in (select Scuola.codice
+                     from Scuola join Esito on Scuola.codice = Esito.codscuola
+                     where promossi < bocciati)
+
+
+-- Query 5.
+select distinct P.regione
+from Provincia P
+where P.codprovincia in (select Provincia.codprovincia
+			  from Provincia join Scuola on Provincia.codprovincia = Scuola.provincia join Esito 
+			       on Esito.codscuola = Scuola.codice 
+                         group by Provincia.codprovincia, Esito. anno
+                         having sum(Esito.promossi) < sum(Esito.bocciati))

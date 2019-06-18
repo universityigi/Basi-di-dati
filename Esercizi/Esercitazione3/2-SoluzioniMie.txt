@@ -1,0 +1,20 @@
+1)  select distinct nome, categoria
+    from programmatore p left join autore a on p.codice = a.codice 
+    left join programma pg on a.id = pg.id  
+    where linguaggio != 'PYTHON'
+    order by nome
+
+
+2)  select P.codice, P.nome
+    from programmatore P
+    where P.codice not in (select A.codice
+						from autore A, programma G
+						where A.id = G.id and G.linguaggio <> 'Java')
+
+3)  select p1.id
+    from programma p1
+    where not exists (select *
+				  from programma p2
+				  where p1.id <> p2.id and p1.anno = p2.anno and p2.linguaggio = p2.linguaggio)
+				  
+4)  

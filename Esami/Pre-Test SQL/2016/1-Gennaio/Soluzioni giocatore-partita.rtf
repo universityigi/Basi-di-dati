@@ -1,0 +1,153 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 1 A\
+\
+/*\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf2 \expnd0\expndtw0\kerning0
+Calcolare il codice dei giocatori che hanno sconfitto almeno un giocatore di categoria 10 dopo il 1999.
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 */\
+\
+select g1.codice\
+from giocatore g1, giocatore g2, partita p\
+where g1.categoria>5 and g2.categoria = 10 and p.codvincente = g1.codice and p.codperdente=g2.codice and p.anno\
+group by g1.codice\
+having count(p)>1\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf2 \expnd0\expndtw0\kerning0
+2 A\
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+
+\f1 \cf2 \expnd0\expndtw0\kerning0
+/*\
+Per ogni giocatore G1 e per ogni partita P in cui G1 `e risultato vincitore sconfiggendo con almeno\
+due set di scarto un giocatore G2 di categoria superiore a quella di G1, restituire il nome di G1,\
+il nome di G2, il numero della partita P e l\'92anno in cui la partita P si `e giocata. */\
+\
+select g1.nome, g2.nome, count(p), p.anno\
+from giocatore g1, giocatore g2, partita p\
+where p.setvintig1 -2 >= p.setvintig2 and p.codvincente = g1.codice and p.codperdente=g2.codice and g1.categoria<g2.categoria\
+group by g1.nome, g2.nome, p.anno \
+\
+3 A\
+\
+/* Calcolare il nome dei giocatori che non hanno mai giocato nel 2015. */\
+\
+select g1.nome\
+from giocatore g1\
+where g1 not in (select g1 from giocatore g1, partita p where p.codvincente = g1.codice and p.anno = 2015) and g1 not in (select g2 from giocatore g2, partita p where p.codperdente=g2.codice and p.anno = 2015)\
+\
+\
+4 A \
+\
+/* Per ogni giocatore G1, calcolare quante partite ha perso contro un giocatore di categoria uguale a 1, mostrando il codice di G1 ed il numero di tali partite perse, ma solo se tale numero `e maggiore di 1. */\
+\
+select p.codperdente, count(p)\
+from giocatore g1, giocatore g2, partita p\
+where p.codvincente = g2.codice and p.codperdente=g1.codice and g2.categoria=1\
+group by p.codperdente\
+having count(p)>1\
+\
+\
+5 A\
+\
+/* Calcolare il nome dei giocatori che hanno vinto solo contro giocatori di categoria inferiore alla propria. */\
+\
+select g1.nome\
+from giocatore g1\
+where g1.codice in (select g1.codice from giocatore g1, giocatore g2, partita p where p.codvincente = g1.codice and p.codperdente=g2.codice and g2.categoria>=g1.categoria)\
+\
+\
+\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+1 B\
+/*\
+Calcolare il codice dei giocatori che hanno perso con almeno un giocatore di categoria 3 prima del\
+2000.*/\
+\
+select g1.codice\
+from giocatore g1, partita p1, giocatore g2\
+where p1.codperdente = g1.codice and p1.codvincente = g2.codice and g2.categoria = 3 and p1.anno < 2000\
+\
+2 B \
+/*\
+Per ogni giocatore G1 e per ogni partita P in cui G1 `e stato sconfitto con almeno due set di scarto\
+da un giocatore G2 di categoria inferiore a quella di G1, restituire il nome di G1, il nome di G2,\
+e l\'92anno in cui la partita P si `e giocata.*/\
+\
+select g1.nome, g2.nome, p.anno\
+from giocatore g1, partita p, giocatore g2\
+where p.codperdente = g1.codice and p.codvincente = g2.codice and g1.categoria>g2.categoria and p.setvintig1 - 2 >= p.setvintig2\
+\
+3 B\
+/*\
+Calcolare il nome dei giocatori che hanno vinto almeno una partita sia nel 2014 sia nel 2015.\
+*/\
+\
+select g1.nome\
+from giocatore g1\
+where g1.codice in (select p.codvincente from partita p where p.anno = '2014') and g1.codice in (select p.codvincente from partita p where p.anno = '2015')\
+\
+4 B \
+\
+*/Calcolare il nome dei giocatori che hanno vinto solo con giocatori di categoria superiore alla\
+propria. */\
+\
+select g1.nome\
+from giocatore g1, partita p, giocatore g2\
+where select p from giocatore g1, partita p, giocatore g2 where g1.codice = p.codvincente and g2.codice = p.codperdente and g2.categoria<=g1.categoria\
+\
+5 B \
+\
+/*Per ogni giocatore G1 di categoria maggiore di 5, calcolare quante partite ha vinto contro un\
+giocatore di categoria uguale a 10, mostrando il codice di G1 ed il numero di tali partite vinte,\
+ma solo se tale numero `e maggiore di 1.*/\
+\
+select g1.codice, count(p)\
+from giocatore g1, giocatore g2, partita p\
+where g1.categoria>5 and g2.categoria = 10 and p.codvincente = g1.codice and p.codperdente=g2.codice\
+group by g1.codice\
+having count(p)>1\
+\
+\
+\
+C http://www.dis.uniroma1.it/~lenzerin/home/files/2016-01-11-2.pdf\
+\
+1 C \
+\
+/*\
+Calcolare il numero e l\'92anno delle partite in cui il giocatore che ha vinto `e di categoria 1. */\
+\
+select distinct  p.numero, p.anno\
+from giocatore g1, partita p, giocatore g2\
+where p.codvincente = g1.codice and g1.categoria=1\
+\
+2 C\
+\
+/*\
+Calcolare il nome dei giocatori che hanno vinto almeno una partita contro un giocatore superiore\
+di almeno tre categorie, evitando duplicazioni nel risultato. */\
+\
+select distinct g1.nome\
+from giocatore g1, partita p, giocatore g2\
+where g1.codice = p.codvincente and g2.codice = p.codperdente and g2.categoria<=3+g1.categoria\
+\
+3 C \
+\
+\
+}

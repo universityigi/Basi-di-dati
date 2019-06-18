@@ -1,0 +1,43 @@
+﻿
+
+Query 1
+select t.codice
+from telefonata t, utente u1, utente u2
+where t.utente1 = u1.cf and t.utente2 = u2.cf and u1.cognome = u2.cognome
+
+Query 2
+select u1.citta, avg(t.durata)
+from telefonata t, utente u1, utente u2
+where t.utente1 = u1.cf and t.utente2 = u2.cf and u1.citta = u2.citta 
+group by u1.citta
+
+Query 3
+select u.cf
+from utente u
+where u.cf not in (select t.utente1
+                   from telefonata t, utente u1, utente u2, citta c1, citta c2
+                   where t.utente1 = u1.cf and t.utente2 = u2.cf and u1.citta = c1.id 
+                         and u2.citta = c2.id and c1.regione <> c2.regione)
+
+Query 4
+select u1.cf, u2.cf
+from utente u1, utente u2
+where (u1.cf,u2.cf) not in (select t.utente1, t.utente2
+                            from telefonata t
+                            where t.durata >= 3)
+
+Query 5
+select regione, 0
+from citta
+where regione not in (select regione 
+                      from telefonata t, utente u, citta c 
+                      where t.utente2 = u.cf and u.citta = c.id and t.durata > 120)
+union
+select c.regione, count(t.utente2)
+from telefonata t, utente u, citta c 
+where t.utente2 = u.cf and u.citta = c.id and t.durata > 120
+group by c.regione
+
+
+
+

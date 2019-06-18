@@ -1,0 +1,41 @@
+Query 1
+select p.codice
+from partita p, squadra s1, squadra s2
+where p.squadra1 = s1.nome and p.squadra2 = s2.nome and s1.colore = s2.colore
+
+Query 2
+select s1.comune, count(p.codice)
+from partita p, squadra s1, squadra s2
+where p.squadra1 = s1.nome and p.squadra2 = s2.nome and s1.comune = s2.comune 
+group by s1.comune
+
+Query 3
+select s.nome
+from squadra s
+where s.nome not in (select s1.nome
+                     from partita p, squadra s1, squadra s2, comune c1, comune c2
+                     where p.squadra1 = s1.nome and p.squadra2 = s2.nome and 
+                           s1.comune = c1.id and s2.comune = c2.id and 
+                           c1.regione <> c2.regione)
+
+Query 4
+select s1.nome, s2.nome
+from squadra s1, squadra s2
+where (s1.nome,s2.nome) not in (select p.squadra1, p.squadra2
+                                from partita p
+                                where p.goalscarto > 1)
+
+Query 5
+select c.regione, 0
+from comune c
+where c.regione not in (select c.regione 
+                        from partita p, squadra s, comune c 
+                        where p.squadra2 = s.nome and s.comune = c.id 
+                              and p.goalscarto <= 3)
+union
+select c.regione, count(p.squadra2)
+from partita p, squadra s, comune c 
+where p.squadra2 = s.nome and s.comune = c.id and p.goalscarto <= 3
+group by c.regione
+
+
